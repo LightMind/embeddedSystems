@@ -98,8 +98,6 @@ public class GraphBot {
 				
 				Pose p = poseProvider.getPose();
 				
-				
-				
 				Thread.sleep(10);
 				dos.writeInt(1);
 				dos.writeInt((int) p.getX());
