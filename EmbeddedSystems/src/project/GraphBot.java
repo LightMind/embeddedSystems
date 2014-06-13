@@ -31,6 +31,8 @@ import lejos.util.PIDController;
 public class GraphBot {
 	public List<Location> graph = new ArrayList<Location>();
 	public int graphCounter = 0;
+	public Location lastLocation = null;
+
 	LightSensor leftSensor = new LightSensor(SensorPort.S2);
 	LightSensor rightSensor = new LightSensor(SensorPort.S1);
 	ColorSensor colorSensor = new ColorSensor(SensorPort.S4);
@@ -41,7 +43,7 @@ public class GraphBot {
 
 	int currentAngle = 0;
 	float currentDistance = 0;
-	Point currentLocation = new Point(0, 0);
+	Point currentPoint = new Point(0, 0);
 
 	int whiteValue = 624;
 	int blackValue = 365;
@@ -130,22 +132,32 @@ public class GraphBot {
 
 				Point p = new Point((float) Math.toRadians(currentAngle));
 				p.multiplyBy(currentDistance);
-				currentLocation.add(p);
+				currentPoint.add(p);
 
-				Location currentGraphLocation = findClosesLocation(currentLocation);
+				Location currentGraphLocation = findClosesLocation(currentPoint);
 				if (currentGraphLocation == null) {
-					currentGraphLocation = createNewLocation(currentLocation);
+					currentGraphLocation = createNewLocation(currentPoint);
 					graph.add(currentGraphLocation);
+				} else {
+					if (currentGraphLocation.position.distance(currentPoint) > 75) {
+						currentGraphLocation = createNewLocation(currentPoint);
+						graph.add(currentGraphLocation);
+						currentGraphLocation.connectTo(lastLocation);
+					} else {
+						// we assume that we hit a node , that is known to us.
+						currentGraphLocation.connectTo(lastLocation);
+						currentPoint.setLocation(currentGraphLocation.position);
+					}
 				}
 
 				LCD.drawString("" + currentDistance + "    ", 1, 5);
-				LCD.drawString("x = " + (int) currentLocation.x, 1, 3);
-				LCD.drawString("y = " + (int) currentLocation.y, 1, 4);
+				LCD.drawString("x = " + (int) currentPoint.x, 1, 3);
+				LCD.drawString("y = " + (int) currentPoint.y, 1, 4);
 
 				Thread.sleep(10);
 				dos.writeInt(1);
-				dos.writeInt((int) (int) currentLocation.x);
-				dos.writeInt((int) (int) currentLocation.y);
+				dos.writeInt((int) (int) currentPoint.x);
+				dos.writeInt((int) (int) currentPoint.y);
 				dos.flush();
 
 				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
@@ -174,6 +186,7 @@ public class GraphBot {
 				currentAngle %= 360;
 				currentDistance = 0;
 				dtl.reset();
+				lastLocation = currentGraphLocation;
 			}
 			Thread.sleep(25);
 		}
