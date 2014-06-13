@@ -99,8 +99,6 @@ public class GraphBot {
 				LCD.drawString("x = " + (int)currentLocation.x ,1, 3);
 				LCD.drawString("y = " + (int)currentLocation.y ,1, 4);
 				
-				/*Pose p = poseProvider.getPose();*/
-				
 				Thread.sleep(10);
 				dos.writeInt(1);
 				dos.writeInt((int) (int)currentLocation.x);
