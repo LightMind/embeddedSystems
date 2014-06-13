@@ -29,9 +29,8 @@ import lejos.robotics.navigation.Pose;
 import lejos.util.PIDController;
 
 public class GraphBot {
-
 	public List<Location> graph = new ArrayList<Location>();
-
+	public int graphCounter = 0;
 	LightSensor leftSensor = new LightSensor(SensorPort.S2);
 	LightSensor rightSensor = new LightSensor(SensorPort.S1);
 	ColorSensor colorSensor = new ColorSensor(SensorPort.S4);
@@ -58,6 +57,12 @@ public class GraphBot {
 		LCD.clear();
 		dis = btc.openDataInputStream();
 		dos = btc.openDataOutputStream();
+	}
+
+	public Location createNewLocation(Point pos) {
+		Location l = new Location(graphCounter, pos);
+		graphCounter++;
+		return l;
 	}
 
 	public Location findClosesLocation(Point p) {
