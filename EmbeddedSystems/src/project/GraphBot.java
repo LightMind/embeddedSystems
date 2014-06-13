@@ -2,6 +2,8 @@ package project;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import lab4.PIDLineFollower;
@@ -27,6 +29,8 @@ import lejos.robotics.navigation.Pose;
 import lejos.util.PIDController;
 
 public class GraphBot {
+
+	public List<Location> graph = new ArrayList<Location>();
 
 	LightSensor leftSensor = new LightSensor(SensorPort.S2);
 	LightSensor rightSensor = new LightSensor(SensorPort.S1);
@@ -54,6 +58,19 @@ public class GraphBot {
 		LCD.clear();
 		dis = btc.openDataInputStream();
 		dos = btc.openDataOutputStream();
+	}
+
+	public Location findClosesLocation(Point p) {
+		double minDistance = Float.MAX_VALUE;
+		Location currentMin = null;
+		for (Location l : graph) {
+			double d = l.position.distance(p);
+			if (d < minDistance) {
+				currentMin = l;
+				minDistance = d;
+			}
+		}
+		return currentMin;
 	}
 
 	public void run() throws Exception {
