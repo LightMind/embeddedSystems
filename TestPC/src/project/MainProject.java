@@ -64,27 +64,50 @@ public class MainProject {
 	     InputStream in = nxtComm.getInputStream();
 	     
 	     
-	     while(true){
-	    	 {
-	    		 int which = readNextInt(in);
-	    		 
-	    		 if(which == 1){			    	
-		    		 int x = readNextInt(in);		    				 
-		    		 int y = readNextInt(in);
+	     try{
+		     while(true){
+		    	 {
+		    		 int which = readNextInt(in);
 		    		 
-			    	 System.out.println("(x,y) = " + x +", " + y );
-	    		 } 
-	    		 
-	    		 if(which == 2){
-	    			 int type = readNextInt(in);
-	    			 float arcRadius = readNextFloat(in);
-	    			 float turned = readNextFloat(in);
-	    			 float distance = readNextFloat(in);	    			 
-	    			 System.out.println("Event. Type = " + type + " arcRadius= " + arcRadius + " turned= " + turned + " distance=" + distance);
-	    		 }
-	    	 }
-	    	 
-	    	 Thread.sleep(10);
-	     }	    
+		    		 if(which == 1){			    	
+			    		 int x = readNextInt(in);		    				 
+			    		 int y = readNextInt(in);
+			    		 
+				    	 System.out.println("(x,y) = " + x +", " + y );
+		    		 } 
+		    		 
+		    		 if(which == 2){
+		    			 int type = readNextInt(in);
+		    			 float arcRadius = readNextFloat(in);
+		    			 float turned = readNextFloat(in);
+		    			 float distance = readNextFloat(in);	    			 
+		    			 System.out.println("Event. Type = " + type + " arcRadius= " + arcRadius + " turned= " + turned + " distance=" + distance);
+		    		 }
+		    		 
+		    		 if(which == 3){
+		    			 int id = readNextInt(in);
+		    			 float x = readNextFloat(in);
+		    			 float y = readNextFloat(in);
+		    			 
+		    			 System.out.println("Location. id = " + id + ",  x =" + x + ",  y = " + y);
+		    		 }
+		    		 
+		    		 if(which == 4){
+		    			 System.out.println("null visited");
+		    		 }
+		    		 
+		    		 if(which == 5){
+		    			 System.out.println("bigger than 50");
+		    		 }
+		    		 if(which == 6){
+		    			 System.out.println("smaller than 50");
+		    		 }
+		    	 }
+		    	 
+		    	 Thread.sleep(10);
+		     }	    
+	     } catch (Exception e){
+	    	 System.exit(0);
+	     }
 	 }
 }

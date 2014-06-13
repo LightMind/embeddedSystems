@@ -68,10 +68,10 @@ public class GraphBot {
 	}
 
 	public Location findClosestLocation(Point p) {
-		double minDistance = Float.MAX_VALUE;
+		double minDistance = 1000000.0;
 		Location currentMin = null;
 		for (Location l : graph) {
-			double d = l.position.distance(p);
+			double d = l.getPoint().distance(p);
 			if (d < minDistance) {
 				currentMin = l;
 				minDistance = d;
@@ -100,6 +100,22 @@ public class GraphBot {
 	}
 
 	public void run() throws Exception {
+		
+		/*while(true){
+			Color c = colorSensor.getRawColor();
+			LCD.drawInt(c.getRed(), 5, 0, 0);
+			LCD.drawInt(c.getGreen(), 5, 0 , 1);
+			LCD.drawInt(c.getBlue(), 5, 0, 2);
+			LCD.drawInt(colorSensor.getColorID(),5, 0, 3);
+			
+			LCD.drawString("Green: " + ColorSensor.GREEN, 0, 4);
+			LCD.drawString("Yellow: " + ColorSensor.YELLOW, 0, 5);
+			
+			if(Button.ESCAPE.isDown()){
+				break;
+			}
+		}*/
+		
 		setupBluetooth();
 		DistanceTravelListener dtl = new DistanceTravelListener(dos);
 
@@ -129,29 +145,38 @@ public class GraphBot {
 									// crossroad
 
 				currentDistance = dtl.distance;
-
-				Point p = new Point((float) Math.toRadians(currentAngle));
-				p.multiplyBy(currentDistance);
-				currentPoint = currentPoint.add(p);
+				
+				float x = (float)Math.cos(Math.toRadians(currentAngle))*currentDistance;
+				float y = (float)Math.sin(Math.toRadians(currentAngle))*currentDistance;
+				
+				currentPoint.x += x;
+				currentPoint.y += y;
 
 				Location currentGraphLocation = findClosestLocation(currentPoint);
+
+				
 				if (currentGraphLocation == null) {
 					currentGraphLocation = createNewLocation(currentPoint);
 					graph.add(currentGraphLocation);
 					Sound.beepSequenceUp();
+					dos.writeInt(4);
+					
 				} else {
-					if (currentGraphLocation.position.distance(currentPoint) > 50) {
+					if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
 						currentGraphLocation = createNewLocation(currentPoint);
 						graph.add(currentGraphLocation);
 						Sound.beepSequenceUp();
 						currentGraphLocation.connectTo(lastLocation);
+						dos.writeInt(5);
 					} else {
 						// we assume that we hit a node , that is known to us.
 						currentGraphLocation.connectTo(lastLocation);
-						currentPoint.setLocation(currentGraphLocation.position);
+						currentPoint = currentGraphLocation.getPoint();
+						dos.writeInt(6);
 					}
 				}
 
+				currentGraphLocation.send(dos);
 				LCD.drawString("" + currentDistance + "    ", 1, 5);
 				LCD.drawString("x = " + (int) currentPoint.x, 1, 3);
 				LCD.drawString("y = " + (int) currentPoint.y, 1, 4);
@@ -274,6 +299,8 @@ public class GraphBot {
 
 	private void testColorSensor() {
 		int color = colorSensor.getColorID();
+		
+				
 
 		LCD.clear();
 		LCD.drawString("color: " + color, 0, 0);

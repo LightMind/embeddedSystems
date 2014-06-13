@@ -1,12 +1,14 @@
 package project;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import lejos.geom.Point;
 
 public class Location {
-	public Point position;
+	private Point position;
 	public final int id;
 	public int possibleConnectionBits = 0;
 	public List<Location> connections = new ArrayList<Location>();
@@ -16,6 +18,23 @@ public class Location {
 			connections.add(l);
 			l.connections.add(this);
 		}
+	}
+	
+	public Point getPoint(){
+		return position.clone();
+	}
+	
+	public void send(DataOutputStream out){
+		try {
+			out.writeInt(3);
+			out.writeInt(id);
+			out.writeFloat(position.x);
+			out.writeFloat(position.y);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void disconnect(Location l) {
