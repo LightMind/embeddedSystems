@@ -63,9 +63,7 @@ public class GraphBot {
 				
 		setupBluetooth();
 		DistanceTravelListener dtl = new DistanceTravelListener(dos);
-		OdometryListener poseProvider = new OdometryListener(pilot);
-		
-		
+				
 		// read white
 		//whiteValue = calibrateWhite();		
 		//blackValue = calibrateBlack();		
