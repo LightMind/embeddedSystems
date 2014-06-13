@@ -67,7 +67,7 @@ public class GraphBot {
 		return l;
 	}
 
-	public Location findClosesLocation(Point p) {
+	public Location findClosestLocation(Point p) {
 		double minDistance = Float.MAX_VALUE;
 		Location currentMin = null;
 		for (Location l : graph) {
@@ -132,18 +132,18 @@ public class GraphBot {
 
 				Point p = new Point((float) Math.toRadians(currentAngle));
 				p.multiplyBy(currentDistance);
-				currentPoint.add(p);
+				currentPoint = currentPoint.add(p);
 
-				Location currentGraphLocation = findClosesLocation(currentPoint);
+				Location currentGraphLocation = findClosestLocation(currentPoint);
 				if (currentGraphLocation == null) {
 					currentGraphLocation = createNewLocation(currentPoint);
 					graph.add(currentGraphLocation);
 					Sound.beepSequenceUp();
 				} else {
-					if (currentGraphLocation.position.distance(currentPoint) > 75) {
+					if (currentGraphLocation.position.distance(currentPoint) > 50) {
 						currentGraphLocation = createNewLocation(currentPoint);
 						graph.add(currentGraphLocation);
-						Sound.beepSequence();
+						Sound.beepSequenceUp();
 						currentGraphLocation.connectTo(lastLocation);
 					} else {
 						// we assume that we hit a node , that is known to us.
