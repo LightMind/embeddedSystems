@@ -132,17 +132,24 @@ public class GraphBot {
 
 	}
 
+	public static int normalizeAngle(int angle) {
+		angle = angle % 360;
+
+		if (angle > 46 && angle < 135)
+			return 90;
+		if (angle > 136 && angle < 225)
+			return 180;
+		if (angle > 226 && angle < 315)
+			return 270;
+		if (angle > 316 && angle < 45)
+			return 0;
+		return 0;
+	}
+
 	private int[] normalizeAngles(int[] roads) {
 		int[] res = new int[roads.length];
 		for (int i = 0; i < roads.length; i++) {
-			if (roads[i] > 46 && roads[i] < 135)
-				res[i] = 90;
-			if (roads[i] > 136 && roads[i] < 225)
-				res[i] = 180;
-			if (roads[i] > 226 && roads[i] < 315)
-				res[i] = 270;
-			if (roads[i] > 316 && roads[i] < 45)
-				res[i] = 0;
+			res[i] = normalizeAngle(res[i]);
 		}
 
 		return res;

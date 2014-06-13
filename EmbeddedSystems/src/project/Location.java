@@ -1,5 +1,6 @@
 package project;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lejos.geom.Point;
@@ -7,7 +8,7 @@ import lejos.geom.Point;
 public class Location {
 	public Point position;
 	public final int id;
-	public List<Location> connections;
+	public List<Location> connections = new ArrayList<Location>();
 
 	public void connectTo(Location l) {
 		if (!l.equals(this) && !connections.contains(l)) {
@@ -21,6 +22,25 @@ public class Location {
 			connections.remove(connections.indexOf(l));
 			l.connections.remove(l.connections.indexOf(this));
 		}
+	}
+
+	public int connectionBits() {
+		int b = 0;
+
+		for (Location l : connections) {
+			int angle = angleTo(l);
+			angle = GraphBot.normalizeAngle(angle);
+			if (angle == 0)
+				b = b | 1;
+			if (angle == 90)
+				b = b | 2;
+			if (angle == 180)
+				b = b | 4;
+			if (angle == 270)
+				b = b | 8;
+		}
+
+		return b;
 	}
 
 	public int angleTo(Location l) {
