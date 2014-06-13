@@ -56,12 +56,7 @@ public class GraphBot {
         dos = btc.openDataOutputStream();		
 	}
     
-	public void run() throws Exception{
-		/*LCD.drawString("" + MoveType.ARC.ordinal(), 0, 1);
-		LCD.drawString("" + MoveType.ROTATE.ordinal(), 0, 2);
-		LCD.drawString("" + MoveType.STOP.ordinal(), 0, 3);
-		LCD.drawString("" + MoveType.TRAVEL.ordinal(), 0, 4);*/
-				
+	public void run() throws Exception{				
 		setupBluetooth();
 		DistanceTravelListener dtl = new DistanceTravelListener(dos);
 				
