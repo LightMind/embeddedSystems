@@ -8,6 +8,7 @@ import lejos.geom.Point;
 public class Location {
 	public Point position;
 	public final int id;
+	public int possibleConnectionBits = 0;
 	public List<Location> connections = new ArrayList<Location>();
 
 	public void connectTo(Location l) {

@@ -10,15 +10,17 @@ public class GraphBotMain {
 		GraphBot gb = new GraphBot();
 		gb.run();
 	}
-	
-	
-	public static void escapeSetup(){
+
+	public static void escapeSetup() {
 		Button.ESCAPE.addButtonListener(new ButtonListener() {
 			@Override
-			public void buttonReleased(Button b) {System.exit(0);}
-			
+			public void buttonReleased(Button b) {
+				System.exit(0);
+			}
+
 			@Override
-			public void buttonPressed(Button b) {}
+			public void buttonPressed(Button b) {
+			}
 		});
 	}
 
