@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.util.Random;
 
 import lab4.PIDLineFollower;
+import lejos.geom.Point;
 import lejos.nxt.Button;
 import lejos.nxt.ColorSensor;
 import lejos.nxt.ColorSensor.Color;
@@ -37,8 +38,8 @@ public class GraphBot {
 	
 	int currentAngle = 0;
 	float currentDistance = 0;
-	float x,y;
-	
+	Point currentLocation = new Point(0,0);
+		
 	int whiteValue = 624;
 	int blackValue = 365;
 	int grayValue = 0;
@@ -90,19 +91,20 @@ public class GraphBot {
 				
 				currentDistance = dtl.distance;	
 				
-				x += Math.cos(Math.toRadians(currentAngle)) *currentDistance;
-				y += Math.sin(Math.toRadians(currentAngle))  *currentDistance;
-				
+				Point p = new Point((float) Math.toRadians(currentAngle));
+				p.multiplyBy(currentDistance);
+				currentLocation.add(p);
+								
 				LCD.drawString("" + currentDistance + "    ", 1, 5);
-				LCD.drawString("x = " + (int)x ,1, 3);
-				LCD.drawString("y = " + (int)y ,1, 4);
+				LCD.drawString("x = " + (int)currentLocation.x ,1, 3);
+				LCD.drawString("y = " + (int)currentLocation.y ,1, 4);
 				
 				/*Pose p = poseProvider.getPose();*/
 				
 				Thread.sleep(10);
 				dos.writeInt(1);
-				dos.writeInt((int) x);
-				dos.writeInt((int) y);
+				dos.writeInt((int) (int)currentLocation.x);
+				dos.writeInt((int) (int)currentLocation.y);
 				dos.flush();
 				
 				int[] results = normalizeAngles(findOutgoingRoads(grayValue));	
