@@ -9,17 +9,16 @@ import lejos.robotics.navigation.MoveProvider;
 import lejos.robotics.navigation.Move.MoveType;
 
 public class DistanceTravelListener implements MoveListener {
-	
+
 	public float distance = 0f;
-	
+
 	public DataOutputStream out;
-	
-	
+
 	public float direction;
-	public float x,y;
-	
-	public DistanceTravelListener(DataOutputStream out){
-		this.out = out;		
+	public float x, y;
+
+	public DistanceTravelListener(DataOutputStream out) {
+		this.out = out;
 	}
 
 	@Override
@@ -28,11 +27,11 @@ public class DistanceTravelListener implements MoveListener {
 	}
 
 	@Override
-	public void moveStopped(Move event, MoveProvider mp) {			
+	public void moveStopped(Move event, MoveProvider mp) {
 		distance += event.getDistanceTraveled();
 	}
-	
-	public void reset(){
+
+	public void reset() {
 		distance = 0;
 	}
 
