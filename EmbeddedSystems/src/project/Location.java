@@ -8,22 +8,29 @@ public class Location {
 	public Point position;
 	public final int id;
 	public List<Location> connections;
-	
-	public void connectTo(Location l){
-		if(!l.equals(this) && !connections.contains(l)){
+
+	public void connectTo(Location l) {
+		if (!l.equals(this) && !connections.contains(l)) {
 			connections.add(l);
 			l.connections.add(this);
 		}
 	}
-	
-	public void disconnect(Location l){
-		if(connections.contains(l)){
+
+	public void disconnect(Location l) {
+		if (connections.contains(l)) {
 			connections.remove(connections.indexOf(l));
 			l.connections.remove(l.connections.indexOf(this));
 		}
-	}	
-	
-	public Location(int identifier, Point pos){
+	}
+
+	public int angleTo(Location l) {
+		Point p = l.position.subtract(position);
+		int degree = (int) Math.toDegrees(p.angle());
+		return degree;
+
+	}
+
+	public Location(int identifier, Point pos) {
 		position = pos;
 		id = identifier;
 	}
@@ -49,5 +56,5 @@ public class Location {
 			return false;
 		return true;
 	}
-	
+
 }
