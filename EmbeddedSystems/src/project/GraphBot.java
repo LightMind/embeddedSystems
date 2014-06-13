@@ -38,6 +38,10 @@ public class GraphBot {
 	float currentDistance = 0;
 	float x,y;
 	
+	int whiteValue = 624;
+	int blackValue = 365;
+	int grayValue = 0;
+	
 	BTConnection btc;
     private DataInputStream dis;
     private DataOutputStream dos;
@@ -51,21 +55,16 @@ public class GraphBot {
 	}
     
 	public void run() throws Exception{
-		LCD.drawString("" + MoveType.ARC.ordinal(), 0, 1);
+		/*LCD.drawString("" + MoveType.ARC.ordinal(), 0, 1);
 		LCD.drawString("" + MoveType.ROTATE.ordinal(), 0, 2);
 		LCD.drawString("" + MoveType.STOP.ordinal(), 0, 3);
-		LCD.drawString("" + MoveType.TRAVEL.ordinal(), 0, 4);
-		
-		
+		LCD.drawString("" + MoveType.TRAVEL.ordinal(), 0, 4);*/
+				
 		setupBluetooth();
 		DistanceTravelListener dtl = new DistanceTravelListener(dos);
 		OdometryListener poseProvider = new OdometryListener(pilot);
 		
 		
-		int whiteValue = 624;
-		int blackValue = 365;
-		int grayValue = 0;
-				
 		// read white
 		//whiteValue = calibrateWhite();		
 		//blackValue = calibrateBlack();		
@@ -81,12 +80,15 @@ public class GraphBot {
 		
 		while(true){
 			currentDistance = dtl.distance;	
-			LCD.drawString("" + currentDistance + "    ", 1, 5);			
+			LCD.drawString("" + currentDistance + "    ", 1, 5);	
+			
 			PID(grayValue);
+			
 			if(findCrossroads()){
 				pilot.stop();
 				Thread.sleep(500);
-				pilot.travel(80);
+				pilot.travel(80); // drive the car to the center of the crossroad
+				
 				currentDistance = dtl.distance;	
 				
 				x += Math.cos(Math.toRadians(currentAngle)) *currentDistance;
@@ -96,15 +98,16 @@ public class GraphBot {
 				LCD.drawString("x = " + (int)x ,1, 3);
 				LCD.drawString("y = " + (int)y ,1, 4);
 				
-				Pose p = poseProvider.getPose();
+				/*Pose p = poseProvider.getPose();*/
 				
 				Thread.sleep(10);
 				dos.writeInt(1);
-				dos.writeInt((int) p.getX());
-				dos.writeInt((int) p.getY());
+				dos.writeInt((int) x);
+				dos.writeInt((int) y);
 				dos.flush();
 				
-				int[] results = findOutgoingRoads(grayValue);				
+				int[] results = normalizeAngles(findOutgoingRoads(grayValue));	
+				
 				Thread.sleep(250);
 				
 				int select = random.nextInt(results.length);			
@@ -119,6 +122,18 @@ public class GraphBot {
 			Thread.sleep(25);
 		}
 		
+	}
+	
+	private int[] normalizeAngles(int[] roads){
+		int[] res = new int[roads.length];
+		for(int i = 0; i < roads.length; i++){
+			if(roads[i] > 46 && roads[i] < 135) res[i] = 90;
+			if(roads[i] > 136 && roads[i] < 225) res[i] = 180;
+			if(roads[i] > 226 && roads[i] < 315) res[i] = 270;
+			if(roads[i] > 316 && roads[i] < 45) res[i] = 0;			
+		}
+		
+		return res;
 	}
 
 	private int[] findOutgoingRoads(int grayValue) {
