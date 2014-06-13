@@ -78,6 +78,23 @@ public class GraphBot {
 		return currentMin;
 	}
 
+	public void setPossibleDirectionBits(Location l, int[] angles) {
+		int b = 0;
+
+		for (int i : angles) {
+			int j = i - currentAngle;
+			if (j == 0)
+				b = b | 1;
+			if (j == 90)
+				b = b | 2;
+			if (j == 180)
+				b = b | 4;
+			if (j == 270)
+				b = b | 8;
+		}
+		l.possibleConnectionBits = b;
+	}
+
 	public void run() throws Exception {
 		setupBluetooth();
 		DistanceTravelListener dtl = new DistanceTravelListener(dos);
@@ -113,6 +130,12 @@ public class GraphBot {
 				p.multiplyBy(currentDistance);
 				currentLocation.add(p);
 
+				Location currentGraphLocation = findClosesLocation(currentLocation);
+				if (currentGraphLocation == null) {
+					currentGraphLocation = createNewLocation(currentLocation);
+					graph.add(currentGraphLocation);
+				}
+
 				LCD.drawString("" + currentDistance + "    ", 1, 5);
 				LCD.drawString("x = " + (int) currentLocation.x, 1, 3);
 				LCD.drawString("y = " + (int) currentLocation.y, 1, 4);
@@ -125,6 +148,7 @@ public class GraphBot {
 
 				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 
+				setPossibleDirectionBits(currentGraphLocation, results);
 				Thread.sleep(250);
 
 				int select = random.nextInt(results.length);
