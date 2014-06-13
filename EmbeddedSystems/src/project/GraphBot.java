@@ -138,10 +138,12 @@ public class GraphBot {
 				if (currentGraphLocation == null) {
 					currentGraphLocation = createNewLocation(currentPoint);
 					graph.add(currentGraphLocation);
+					Sound.beepSequenceUp();
 				} else {
 					if (currentGraphLocation.position.distance(currentPoint) > 75) {
 						currentGraphLocation = createNewLocation(currentPoint);
 						graph.add(currentGraphLocation);
+						Sound.beepSequence();
 						currentGraphLocation.connectTo(lastLocation);
 					} else {
 						// we assume that we hit a node , that is known to us.
@@ -194,23 +196,20 @@ public class GraphBot {
 	}
 
 	public static int normalizeAngle(int angle) {
-		angle = angle % 360;
-
 		if (angle > 46 && angle < 135)
 			return 90;
 		if (angle > 136 && angle < 225)
 			return 180;
 		if (angle > 226 && angle < 315)
 			return 270;
-		if (angle > 316 && angle < 45)
-			return 0;
+
 		return 0;
 	}
 
 	private int[] normalizeAngles(int[] roads) {
 		int[] res = new int[roads.length];
 		for (int i = 0; i < roads.length; i++) {
-			res[i] = normalizeAngle(res[i]);
+			res[i] = normalizeAngle(roads[i]);
 		}
 
 		return res;
