@@ -83,6 +83,8 @@ public class GraphBot {
 
 		for (int i : angles) {
 			int j = i - currentAngle;
+			j = j + 360;
+			j = j % 360;
 			if (j == 0)
 				b = b | 1;
 			if (j == 90)
