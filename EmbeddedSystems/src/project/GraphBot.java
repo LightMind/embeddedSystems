@@ -15,6 +15,7 @@ import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.MotorPort;
 import lejos.nxt.SensorPort;
+import lejos.nxt.Sound;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.navigation.Move;
@@ -113,7 +114,21 @@ public class GraphBot {
 				int select = random.nextInt(results.length);			
 				int angle = results[select];				
 				
-				pilot.rotate(angle);	
+				
+				if(angle != 0){
+					pilot.rotate(angle-20);
+					Sound.beep();
+					Thread.sleep(100);
+					pilot.rotate(45,true);
+					
+					while(pilot.isMoving()){
+						if(leftSensor.readNormalizedValue() < grayValue){
+							pilot.stop();
+							pilot.rotate(7);
+						}
+					}
+				}
+				
 				currentAngle += angle;
 				currentAngle %= 360;
 				currentDistance = 0;
