@@ -12,7 +12,12 @@ public class World {
 	public Location createNewLocation(Point pos) {
 		Location l = new Location(graphCounter, pos.clone());
 		graphCounter = graphCounter + 1;
+		graph.add(l);
 		return l;
+	}
+	
+	public void deleteLocation(Location l){
+		graph.remove(l);
 	}
 
 	public Location findClosestLocation(Point p) {

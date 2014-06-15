@@ -118,7 +118,6 @@ public class GraphBot {
 				if (currentGraphLocation == null) {
 					currentGraphLocation = world
 							.createNewLocation(currentPoint);
-					world.add(currentGraphLocation);
 					Sound.beepSequenceUp();
 					dos.writeInt(4);
 
@@ -126,7 +125,6 @@ public class GraphBot {
 					if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
 						currentGraphLocation = world
 								.createNewLocation(currentPoint);
-						world.add(currentGraphLocation);
 						Sound.beepSequenceUp();
 						currentGraphLocation.connectTo(lastLocation);
 						dos.writeInt(5);
