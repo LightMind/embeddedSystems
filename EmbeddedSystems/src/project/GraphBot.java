@@ -29,9 +29,8 @@ import lejos.robotics.navigation.Pose;
 import lejos.util.PIDController;
 
 public class GraphBot {
-	public List<Location> graph = new ArrayList<Location>();
-	public int graphCounter = 0;
-	public Location lastLocation = null;
+	World world = new World();
+	Location lastLocation = null;
 
 	LightSensor leftSensor = new LightSensor(SensorPort.S2);
 	LightSensor rightSensor = new LightSensor(SensorPort.S1);
@@ -61,61 +60,20 @@ public class GraphBot {
 		dos = btc.openDataOutputStream();
 	}
 
-	public Location createNewLocation(Point pos) {
-		Location l = new Location(graphCounter, pos.clone());
-		graphCounter = graphCounter + 1;
-		return l;
-	}
-
-	public Location findClosestLocation(Point p) {
-		double minDistance = 100000000.0;
-		Location currentMin = null;
-		for (Location l : graph) {
-			double d = l.getPoint().distance(p);
-			if (d < minDistance) {
-				currentMin = l;
-				minDistance = d;
-			}
-		}
-		return currentMin;
-	}
-
-	public void setPossibleDirectionBits(Location l, int[] angles) {
-		int b = 0;
-
-		for (int i : angles) {
-			int j = i - currentAngle;
-			j = j + 360;
-			j = j % 360;
-			if (j == 0)
-				b = b | 1;
-			if (j == 90)
-				b = b | 2;
-			if (j == 180)
-				b = b | 4;
-			if (j == 270)
-				b = b | 8;
-		}
-		l.possibleConnectionBits = b;
-	}
-
 	public void run() throws Exception {
-		
-		/*while(true){
-			Color c = colorSensor.getRawColor();
-			LCD.drawInt(c.getRed(), 5, 0, 0);
-			LCD.drawInt(c.getGreen(), 5, 0 , 1);
-			LCD.drawInt(c.getBlue(), 5, 0, 2);
-			LCD.drawInt(colorSensor.getColorID(),5, 0, 3);
-			
-			LCD.drawString("Green: " + ColorSensor.GREEN, 0, 4);
-			LCD.drawString("Yellow: " + ColorSensor.YELLOW, 0, 5);
-			
-			if(Button.ESCAPE.isDown()){
-				break;
-			}
-		}*/
-		
+
+		/*
+		 * while(true){ Color c = colorSensor.getRawColor();
+		 * LCD.drawInt(c.getRed(), 5, 0, 0); LCD.drawInt(c.getGreen(), 5, 0 ,
+		 * 1); LCD.drawInt(c.getBlue(), 5, 0, 2);
+		 * LCD.drawInt(colorSensor.getColorID(),5, 0, 3);
+		 * 
+		 * LCD.drawString("Green: " + ColorSensor.GREEN, 0, 4);
+		 * LCD.drawString("Yellow: " + ColorSensor.YELLOW, 0, 5);
+		 * 
+		 * if(Button.ESCAPE.isDown()){ break; } }
+		 */
+
 		setupBluetooth();
 		DistanceTravelListener dtl = new DistanceTravelListener(dos);
 
@@ -145,26 +103,30 @@ public class GraphBot {
 									// crossroad
 
 				currentDistance = dtl.distance;
-				
-				float x = (float)Math.cos(Math.toRadians(currentAngle))*currentDistance;
-				float y = (float)Math.sin(Math.toRadians(currentAngle))*currentDistance;
-				
+
+				float x = (float) Math.cos(Math.toRadians(currentAngle))
+						* currentDistance;
+				float y = (float) Math.sin(Math.toRadians(currentAngle))
+						* currentDistance;
+
 				currentPoint.x += x;
 				currentPoint.y += y;
 
-				Location currentGraphLocation = findClosestLocation(currentPoint);
+				Location currentGraphLocation = world
+						.findClosestLocation(currentPoint);
 
-				
 				if (currentGraphLocation == null) {
-					currentGraphLocation = createNewLocation(currentPoint);
-					graph.add(currentGraphLocation);
+					currentGraphLocation = world
+							.createNewLocation(currentPoint);
+					world.add(currentGraphLocation);
 					Sound.beepSequenceUp();
 					dos.writeInt(4);
-					
+
 				} else {
 					if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
-						currentGraphLocation = createNewLocation(currentPoint);
-						graph.add(currentGraphLocation);
+						currentGraphLocation = world
+								.createNewLocation(currentPoint);
+						world.add(currentGraphLocation);
 						Sound.beepSequenceUp();
 						currentGraphLocation.connectTo(lastLocation);
 						dos.writeInt(5);
@@ -189,7 +151,8 @@ public class GraphBot {
 
 				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 
-				setPossibleDirectionBits(currentGraphLocation, results);
+				world.setPossibleDirectionBits(currentGraphLocation, results,
+						currentAngle);
 				Thread.sleep(250);
 
 				int select = random.nextInt(results.length);
@@ -299,8 +262,6 @@ public class GraphBot {
 
 	private void testColorSensor() {
 		int color = colorSensor.getColorID();
-		
-				
 
 		LCD.clear();
 		LCD.drawString("color: " + color, 0, 0);
