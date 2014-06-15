@@ -62,13 +62,13 @@ public class GraphBot {
 	}
 
 	public Location createNewLocation(Point pos) {
-		Location l = new Location(graphCounter, pos);
-		graphCounter++;
+		Location l = new Location(graphCounter, pos.clone());
+		graphCounter = graphCounter + 1;
 		return l;
 	}
 
 	public Location findClosestLocation(Point p) {
-		double minDistance = 1000000.0;
+		double minDistance = 100000000.0;
 		Location currentMin = null;
 		for (Location l : graph) {
 			double d = l.getPoint().distance(p);
