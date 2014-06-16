@@ -94,13 +94,10 @@ public class GraphBot {
 
 				updateCurrentPosition(dtl);
 
-				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
-
 				Location currentGraphLocation = world
 						.findClosestLocation(currentPoint);
 
-				currentGraphLocation = updateGraph(results,
-						currentGraphLocation);
+				currentGraphLocation = updateGraph(currentGraphLocation);
 
 				sendPosition(currentPoint.x, currentPoint.y);
 				currentGraphLocation.send(dos);
@@ -138,6 +135,7 @@ public class GraphBot {
 							angle = directionToNext - currentAngle;
 							angle = limitAngle(angle);
 						} else {
+							int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 							int select = random.nextInt(results.length);
 							angle = results[select];
 							dos.writeInt(104);
@@ -186,15 +184,17 @@ public class GraphBot {
 		currentPoint.y += y;
 	}
 
-	private Location updateGraph(int[] results, Location currentGraphLocation)
+	private Location updateGraph(Location currentGraphLocation)
 			throws IOException {
 		if (currentGraphLocation == null) {
+			int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 			currentGraphLocation = world.createNewLocation(currentPoint,
 					results, currentAngle);
 			Sound.beepSequenceUp();
 			dos.writeInt(4);
 		} else {
 			if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
+				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 				currentGraphLocation = world.createNewLocation(currentPoint,
 						results, currentAngle);
 				Sound.beepSequenceUp();
