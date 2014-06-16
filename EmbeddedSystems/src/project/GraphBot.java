@@ -4,7 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 
 import lab4.PIDLineFollower;
@@ -103,6 +105,7 @@ public class GraphBot {
 				Thread.sleep(250);
 
 				int select = random.nextInt(results.length);
+
 				int angle = results[select];
 
 				rotateToDirection(angle);

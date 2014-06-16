@@ -3,6 +3,7 @@ package project;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import lejos.geom.Point;
@@ -12,6 +13,9 @@ public class Location {
 	public final int id;
 	public int possibleConnectionBits = 0;
 	public List<Location> connections = new ArrayList<Location>();
+
+	public Location parent = null;
+	public float dist = Float.MAX_VALUE;
 
 	public void connectTo(Location l) {
 		if (!l.equals(this) && !connections.contains(l)) {
@@ -69,7 +73,10 @@ public class Location {
 		Point p = l.position.subtract(position);
 		int degree = (int) Math.toDegrees(p.angle());
 		return degree;
+	}
 
+	public float distanceTo(Location l) {
+		return (float) l.position.distance(position);
 	}
 
 	public Location(int identifier, Point pos, int directions) {
