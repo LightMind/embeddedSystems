@@ -22,8 +22,8 @@ public class MainProject {
 		 thread.start();
 		 
 		 Screen sc = new Screen("test",t);
-		 AppGameContainer gc = new AppGameContainer(sc);
-		 gc.setTargetFrameRate(60);
+		 AppGameContainer gc = new AppGameContainer(sc,1024,720,false);
+		 gc.setTargetFrameRate(5);
 		 gc.start();
 	 }
 }

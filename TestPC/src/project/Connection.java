@@ -3,6 +3,11 @@ package project;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.newdawn.slick.geom.Vector2f;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
@@ -15,6 +20,16 @@ public class Connection implements Runnable {
 	NXTInfo nxtInfo;
 	String name = "DHL-ONE";
 	String address = "00165310C79D";
+
+	private List<LocationData> points = new ArrayList<LocationData>();
+
+	public List<LocationData> getPoints(){
+		List<LocationData> l;
+		synchronized (points) {
+			l = new ArrayList<>(points);
+		}
+		return l;
+	}
 
 	public int bytesToInt(byte[] bs) {
 		int i = 0;
@@ -87,7 +102,16 @@ public class Connection implements Runnable {
 						int id = readNextInt(in);
 						float x = readNextFloat(in);
 						float y = readNextFloat(in);
-						float dir = readNextInt(in);
+						int dir = readNextInt(in);
+
+						synchronized(points){
+							LocationData d = new LocationData();
+							d.id = id;
+							d.x = x;
+							d.y = y;
+							d.dir = dir;
+							points.add(d);
+						}
 
 						System.out.println("Location. id = " + id + ",  x ="
 								+ x + ",  y = " + y + ", dir = " + dir);
