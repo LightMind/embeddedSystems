@@ -98,8 +98,7 @@ public class Location {
 		return true;
 	}
 
-	public static int possibleDirectionBits(int[] angles,
-			int currentAngle) {
+	public static int possibleDirectionBits(int[] angles, int currentAngle) {
 		int b = 0;
 
 		for (int i : angles) {
@@ -117,5 +116,5 @@ public class Location {
 		}
 		return b;
 	}
-	
+
 }
