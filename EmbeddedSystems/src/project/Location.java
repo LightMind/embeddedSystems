@@ -19,22 +19,23 @@ public class Location {
 			l.connections.add(this);
 		}
 	}
-	
-	public Point getPoint(){
+
+	public Point getPoint() {
 		return position.clone();
 	}
-	
-	public void send(DataOutputStream out){
+
+	public void send(DataOutputStream out) {
 		try {
 			out.writeInt(3);
 			out.writeInt(id);
 			out.writeFloat(position.x);
 			out.writeFloat(position.y);
+			out.writeInt(possibleConnectionBits);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public void disconnect(Location l) {
