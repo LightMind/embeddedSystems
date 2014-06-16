@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Stack;
 
 import lab4.PIDLineFollower;
 import lejos.geom.Point;
@@ -40,6 +41,8 @@ public class GraphBot {
 	ColorSensor colorSensor = new ColorSensor(SensorPort.S4);
 
 	DifferentialPilot pilot = new DifferentialPilot(56, 109, Motor.C, Motor.A);
+
+	Stack<Location> path = new Stack<>();
 
 	Random random = new Random(0);
 
@@ -104,9 +107,49 @@ public class GraphBot {
 
 				Thread.sleep(250);
 
-				int select = random.nextInt(results.length);
+				int angle = 0;
+				if (path.empty()) {
+					List<Integer> directions = currentGraphLocation
+							.getUndiscoveredDirections();
+					dos.writeInt(110);
+					dos.writeInt(currentGraphLocation.possibleConnectionBits);
+					dos.writeInt(currentGraphLocation.connectionBits());
+					if (directions.size() > 0) {
+						int select = random.nextInt(directions.size());
+						angle = directions.get(select) - currentAngle;
+						angle = limitAngle(angle);
+						dos.writeInt(101);
+						dos.writeInt(10);
+						dos.writeInt(directions.size());
+						for (Integer direction : directions) {
+							dos.writeInt(direction);
+						}
 
-				int angle = results[select];
+					} else {
+						dos.writeInt(102);
+						Location target = world
+								.findClosestLocationWithUnknownDirections(currentPoint);
+						if (target != null) {
+							path = world.dijkstra(currentGraphLocation, target);
+
+							Location next = path.pop();
+							int directionToNext = currentGraphLocation
+									.angleTo(next);
+							angle = directionToNext - currentAngle;
+							angle = limitAngle(angle);
+						} else {
+							int select = random.nextInt(results.length);
+							angle = results[select];
+							dos.writeInt(104);
+						}
+					}
+				} else {
+					dos.writeInt(103);
+					Location next = path.pop();
+					int directionToNext = currentGraphLocation.angleTo(next);
+					angle = directionToNext - currentAngle;
+					angle = limitAngle(angle);
+				}
 
 				rotateToDirection(angle);
 
@@ -119,6 +162,16 @@ public class GraphBot {
 			Thread.sleep(25);
 		}
 
+	}
+
+	private int limitAngle(int angle) {
+		while (angle < 0) {
+			angle += 360;
+		}
+		while (angle >= 360) {
+			angle -= 360;
+		}
+		return angle;
 	}
 
 	private void updateCurrentPosition(DistanceTravelListener dtl) {

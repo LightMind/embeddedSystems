@@ -81,6 +81,19 @@ public class World {
 		return currentMin;
 	}
 
+	public Location findClosestLocationWithUnknownDirections(Point p) {
+		double minDistance = 100000000.0;
+		Location currentMin = null;
+		for (Location l : graph) {
+			double d = l.getPoint().distance(p);
+			if (d < minDistance && l.getUndiscoveredDirections().size() > 0) {
+				currentMin = l;
+				minDistance = d;
+			}
+		}
+		return currentMin;
+	}
+
 	public void add(Location currentGraphLocation) {
 		if (!graph.contains(currentGraphLocation)) {
 			graph.add(currentGraphLocation);

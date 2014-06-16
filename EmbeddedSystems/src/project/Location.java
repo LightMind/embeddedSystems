@@ -72,11 +72,36 @@ public class Location {
 	public int angleTo(Location l) {
 		Point p = l.position.subtract(position);
 		int degree = (int) Math.toDegrees(p.angle());
+		while (degree < 0) {
+			degree += 360;
+		}
+		while (degree >= 360) {
+			degree -= 360;
+		}
 		return degree;
 	}
 
 	public float distanceTo(Location l) {
 		return (float) l.position.distance(position);
+	}
+
+	public List<Integer> getUndiscoveredDirections() {
+		List<Integer> dirs = new ArrayList<Integer>();
+		int dirbits = connectionBits();
+		if ((dirbits & 1) == 0 && (possibleConnectionBits & 1) == 1) {
+			dirs.add(0);
+		}
+		if ((dirbits & 2) == 0 && (possibleConnectionBits & 2) == 2) {
+			dirs.add(90);
+		}
+		if ((dirbits & 4) == 0 && (possibleConnectionBits & 4) == 4) {
+			dirs.add(180);
+		}
+		if ((dirbits & 8) == 0 && (possibleConnectionBits & 8) == 8) {
+			dirs.add(270);
+		}
+
+		return dirs;
 	}
 
 	public Location(int identifier, Point pos, int directions) {

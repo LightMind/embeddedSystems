@@ -138,6 +138,32 @@ public class Connection implements Runnable {
 							System.out.println(array[i]);
 						}
 					}
+
+					if (which == 101) {
+						System.out.println("choose from undiscovered");
+					}
+					if (which == 102) {
+						System.out.println("alle opdaget på denne knude");
+					}
+
+					if (which == 103) {
+						System.out.println("følg path");
+					}
+
+					if (which == 104) {
+						System.out.println("random");
+					}
+
+					if (which == 110) {
+						int possible = readNextInt(in);
+						int seen = readNextInt(in);
+						System.out.println("possible = "
+								+ Integer.toBinaryString(possible));
+						System.out.println("seen     = "
+								+ Integer.toBinaryString(seen));
+
+					}
+
 				}
 
 				Thread.sleep(10);
