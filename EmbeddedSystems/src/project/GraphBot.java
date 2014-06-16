@@ -2,6 +2,7 @@ package project;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -95,6 +96,7 @@ public class GraphBot {
 			LCD.drawString("" + currentDistance + "    ", 1, 5);
 
 			PID(grayValue);
+			positionUpdate(dtl);
 
 			if (findCrossroads()) {
 				pilot.stop();
@@ -115,12 +117,6 @@ public class GraphBot {
 				LCD.drawString("" + currentDistance + "    ", 1, 5);
 				LCD.drawString("x = " + (int) currentPoint.x, 1, 3);
 				LCD.drawString("y = " + (int) currentPoint.y, 1, 4);
-
-				Thread.sleep(10);
-				dos.writeInt(1);
-				dos.writeInt((int) (int) currentPoint.x);
-				dos.writeInt((int) (int) currentPoint.y);
-				dos.flush();
 
 				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 
@@ -148,6 +144,7 @@ public class GraphBot {
 					}
 				}
 
+				sendPosition(currentPoint.x, currentPoint.y);
 				currentGraphLocation.send(dos);
 
 				Thread.sleep(250);
@@ -178,6 +175,20 @@ public class GraphBot {
 			Thread.sleep(25);
 		}
 
+	}
+
+	private void positionUpdate(DistanceTravelListener dtl) throws IOException,
+			InterruptedException {
+		currentDistance = dtl.distance;
+
+		float testX = currentPoint.x
+				+ (float) Math.cos(Math.toRadians(currentAngle))
+				* currentDistance;
+		float testY = currentPoint.y
+				+ (float) Math.sin(Math.toRadians(currentAngle))
+				* currentDistance;
+
+		sendPosition(testX, testY);
 	}
 
 	public static int normalizeAngle(int angle) {
@@ -319,6 +330,15 @@ public class GraphBot {
 
 		Thread.sleep(500);
 		return whiteValue;
+	}
+
+	private void sendPosition(float x, float y) throws IOException,
+			InterruptedException {
+		dos.writeInt(1);
+		dos.writeInt((int) x);
+		dos.writeInt((int) y);
+		dos.flush();
+
 	}
 
 }

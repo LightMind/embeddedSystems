@@ -31,6 +31,7 @@ public class Location {
 			out.writeFloat(position.x);
 			out.writeFloat(position.y);
 			out.writeInt(possibleConnectionBits);
+			out.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

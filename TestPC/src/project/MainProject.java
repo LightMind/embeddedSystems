@@ -23,7 +23,7 @@ public class MainProject {
 		 
 		 Screen sc = new Screen("test",t);
 		 AppGameContainer gc = new AppGameContainer(sc,1024,720,false);
-		 gc.setTargetFrameRate(5);
+		 gc.setTargetFrameRate(30);
 		 gc.start();
 	 }
 }
