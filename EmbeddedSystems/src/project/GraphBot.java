@@ -91,12 +91,18 @@ public class GraphBot {
 
 		pilot.forward();
 
+		int sendCounter = 0;
+
 		while (true) {
 			currentDistance = dtl.distance;
 			LCD.drawString("" + currentDistance + "    ", 1, 5);
 
 			PID(grayValue);
-			positionUpdate(dtl);
+			sendCounter++;
+			sendCounter = sendCounter % 10;
+			if (sendCounter == 0) {
+				positionUpdate(dtl);
+			}
 
 			if (findCrossroads()) {
 				pilot.stop();
@@ -131,6 +137,11 @@ public class GraphBot {
 
 				} else {
 					if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
+						dos.writeInt(10);
+						dos.writeInt(results.length);
+						for (int i = 0; i < results.length; i++) {
+							dos.writeInt(results[i]);
+						}
 						currentGraphLocation = world.createNewLocation(
 								currentPoint, results, currentAngle);
 						Sound.beepSequenceUp();

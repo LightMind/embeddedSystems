@@ -75,6 +75,7 @@ public class Location {
 	public Location(int identifier, Point pos, int directions) {
 		position = pos;
 		id = identifier;
+		possibleConnectionBits = directions;
 	}
 
 	@Override
@@ -103,8 +104,10 @@ public class Location {
 		int b = 0;
 
 		for (int i : angles) {
-			int j = i - currentAngle;
-			j = j + 360;
+			int j = i + currentAngle;
+			if (j < 0) {
+				j = j + 360;
+			}
 			j = j % 360;
 			if (j == 0)
 				b = b | 1;

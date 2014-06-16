@@ -87,8 +87,6 @@ public class Connection implements Runnable {
 					if (which == 1) {
 						x = readNextInt(in);
 						y = readNextInt(in);
-
-						System.out.println("(x,y) = " + x + ", " + y);
 					}
 
 					if (which == 2) {
@@ -116,8 +114,6 @@ public class Connection implements Runnable {
 							points.add(d);
 						}
 
-						System.out.println("Location. id = " + id + ",  x ="
-								+ x + ",  y = " + y + ", dir = " + dir);
 					}
 
 					if (which == 4) {
@@ -129,6 +125,18 @@ public class Connection implements Runnable {
 					}
 					if (which == 6) {
 						System.out.println("smaller than 50");
+					}
+
+					if (which == 10) {
+						System.out.println(" --- directions ---");
+
+						int amount = readNextInt(in);
+						System.out.println("amount = " + amount);
+						int[] array = new int[30];
+						for (int i = 0; i < amount && i < 30; i++) {
+							array[i] = readNextInt(in);
+							System.out.println(array[i]);
+						}
 					}
 				}
 

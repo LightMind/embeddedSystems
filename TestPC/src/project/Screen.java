@@ -30,6 +30,22 @@ public class Screen extends BasicGame {
 			float scx = (d.x / 3f) + xOffset;
 			float scy = arg0.getScreenHeight() / 3f - (d.y / 3f);
 			g.drawOval(scx, scy, 5, 5);
+
+			g.setColor(Color.white);
+			int dir = d.dir;
+			if ((dir & 1) == 1) {
+				g.drawLine(scx, scy, scx + 10, scy);
+			}
+			if ((dir & 2) == 2) {
+				g.drawLine(scx, scy, scx, scy - 10);
+			}
+			if ((dir & 4) == 4) {
+				g.drawLine(scx, scy, scx - 10, scy);
+			}
+			if ((dir & 8) == 8) {
+				g.drawLine(scx, scy, scx, scy + 10);
+			}
+
 		}
 
 	}
