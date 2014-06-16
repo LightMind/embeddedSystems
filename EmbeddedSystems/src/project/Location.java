@@ -71,7 +71,7 @@ public class Location {
 
 	}
 
-	public Location(int identifier, Point pos) {
+	public Location(int identifier, Point pos, int directions) {
 		position = pos;
 		id = identifier;
 	}
@@ -98,4 +98,24 @@ public class Location {
 		return true;
 	}
 
+	public static int possibleDirectionBits(int[] angles,
+			int currentAngle) {
+		int b = 0;
+
+		for (int i : angles) {
+			int j = i - currentAngle;
+			j = j + 360;
+			j = j % 360;
+			if (j == 0)
+				b = b | 1;
+			if (j == 90)
+				b = b | 2;
+			if (j == 180)
+				b = b | 4;
+			if (j == 270)
+				b = b | 8;
+		}
+		return b;
+	}
+	
 }

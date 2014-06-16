@@ -112,31 +112,6 @@ public class GraphBot {
 				currentPoint.x += x;
 				currentPoint.y += y;
 
-				Location currentGraphLocation = world
-						.findClosestLocation(currentPoint);
-
-				if (currentGraphLocation == null) {
-					currentGraphLocation = world
-							.createNewLocation(currentPoint);
-					Sound.beepSequenceUp();
-					dos.writeInt(4);
-
-				} else {
-					if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
-						currentGraphLocation = world
-								.createNewLocation(currentPoint);
-						Sound.beepSequenceUp();
-						currentGraphLocation.connectTo(lastLocation);
-						dos.writeInt(5);
-					} else {
-						// we assume that we hit a node , that is known to us.
-						currentGraphLocation.connectTo(lastLocation);
-						currentPoint = currentGraphLocation.getPoint();
-						dos.writeInt(6);
-					}
-				}
-
-				currentGraphLocation.send(dos);
 				LCD.drawString("" + currentDistance + "    ", 1, 5);
 				LCD.drawString("x = " + (int) currentPoint.x, 1, 3);
 				LCD.drawString("y = " + (int) currentPoint.y, 1, 4);
@@ -149,8 +124,32 @@ public class GraphBot {
 
 				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 
-				world.setPossibleDirectionBits(currentGraphLocation, results,
-						currentAngle);
+				Location currentGraphLocation = world
+						.findClosestLocation(currentPoint);
+
+				if (currentGraphLocation == null) {
+					currentGraphLocation = world.createNewLocation(
+							currentPoint, results, currentAngle);
+					Sound.beepSequenceUp();
+					dos.writeInt(4);
+
+				} else {
+					if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
+						currentGraphLocation = world.createNewLocation(
+								currentPoint, results, currentAngle);
+						Sound.beepSequenceUp();
+						currentGraphLocation.connectTo(lastLocation);
+						dos.writeInt(5);
+					} else {
+						// we assume that we hit a node , that is known to us.
+						currentGraphLocation.connectTo(lastLocation);
+						currentPoint = currentGraphLocation.getPoint();
+						dos.writeInt(6);
+					}
+				}
+
+				currentGraphLocation.send(dos);
+
 				Thread.sleep(250);
 
 				int select = random.nextInt(results.length);
