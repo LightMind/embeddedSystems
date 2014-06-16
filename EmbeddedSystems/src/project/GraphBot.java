@@ -33,6 +33,8 @@ import lejos.robotics.navigation.Pose;
 import lejos.util.PIDController;
 
 public class GraphBot {
+	public int errorRadius = 70;
+
 	World world = new World();
 	Location lastLocation = null;
 
@@ -193,16 +195,16 @@ public class GraphBot {
 			Sound.beepSequenceUp();
 			dos.writeInt(4);
 		} else {
-			if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
+			if (currentGraphLocation.getPoint().distance(currentPoint) > errorRadius) {
 				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 				currentGraphLocation = world.createNewLocation(currentPoint,
 						results, currentAngle);
 				Sound.beepSequenceUp();
-				currentGraphLocation.connectTo(lastLocation,dos);
+				currentGraphLocation.connectTo(lastLocation, dos);
 				dos.writeInt(5);
 			} else {
 				// we assume that we hit a node , that is known to us.
-				currentGraphLocation.connectTo(lastLocation,dos);
+				currentGraphLocation.connectTo(lastLocation, dos);
 				currentPoint = currentGraphLocation.getPoint();
 				dos.writeInt(6);
 			}
