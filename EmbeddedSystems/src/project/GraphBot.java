@@ -33,7 +33,7 @@ import lejos.robotics.navigation.Pose;
 import lejos.util.PIDController;
 
 public class GraphBot {
-	public int errorRadius = 70;
+	public int errorRadius = 80;
 
 	World world = new World();
 	Location lastLocation = null;
