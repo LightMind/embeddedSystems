@@ -62,19 +62,6 @@ public class GraphBot {
 	}
 
 	public void run() throws Exception {
-
-		/*
-		 * while(true){ Color c = colorSensor.getRawColor();
-		 * LCD.drawInt(c.getRed(), 5, 0, 0); LCD.drawInt(c.getGreen(), 5, 0 ,
-		 * 1); LCD.drawInt(c.getBlue(), 5, 0, 2);
-		 * LCD.drawInt(colorSensor.getColorID(),5, 0, 3);
-		 * 
-		 * LCD.drawString("Green: " + ColorSensor.GREEN, 0, 4);
-		 * LCD.drawString("Yellow: " + ColorSensor.YELLOW, 0, 5);
-		 * 
-		 * if(Button.ESCAPE.isDown()){ break; } }
-		 */
-
 		setupBluetooth();
 		DistanceTravelListener dtl = new DistanceTravelListener(dos);
 
@@ -83,12 +70,7 @@ public class GraphBot {
 		// blackValue = calibrateBlack();
 		grayValue = (whiteValue + blackValue) / 2;
 
-		pilot.addMoveListener(dtl);
-
-		pilot.setAcceleration(500);
-		pilot.setRotateSpeed(100);
-		pilot.setTravelSpeed(150);
-
+		initializePilot(dtl);
 		pilot.forward();
 
 		int sendCounter = 0;
@@ -98,62 +80,22 @@ public class GraphBot {
 			LCD.drawString("" + currentDistance + "    ", 1, 5);
 
 			PID(grayValue);
-			sendCounter++;
-			sendCounter = sendCounter % 10;
-			if (sendCounter == 0) {
-				positionUpdate(dtl);
-			}
+			sendCounter = updatePosition(dtl, sendCounter);
 
 			if (findCrossroads()) {
 				pilot.stop();
 				Thread.sleep(500);
-				pilot.travel(80); // drive the car to the center of the
-									// crossroad
+				pilot.travel(80); // drive to center of intersection
 
-				currentDistance = dtl.distance;
-
-				float x = (float) Math.cos(Math.toRadians(currentAngle))
-						* currentDistance;
-				float y = (float) Math.sin(Math.toRadians(currentAngle))
-						* currentDistance;
-
-				currentPoint.x += x;
-				currentPoint.y += y;
-
-				LCD.drawString("" + currentDistance + "    ", 1, 5);
-				LCD.drawString("x = " + (int) currentPoint.x, 1, 3);
-				LCD.drawString("y = " + (int) currentPoint.y, 1, 4);
+				updateCurrentPosition(dtl);
 
 				int[] results = normalizeAngles(findOutgoingRoads(grayValue));
 
 				Location currentGraphLocation = world
 						.findClosestLocation(currentPoint);
 
-				if (currentGraphLocation == null) {
-					currentGraphLocation = world.createNewLocation(
-							currentPoint, results, currentAngle);
-					Sound.beepSequenceUp();
-					dos.writeInt(4);
-
-				} else {
-					if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
-						dos.writeInt(10);
-						dos.writeInt(results.length);
-						for (int i = 0; i < results.length; i++) {
-							dos.writeInt(results[i]);
-						}
-						currentGraphLocation = world.createNewLocation(
-								currentPoint, results, currentAngle);
-						Sound.beepSequenceUp();
-						currentGraphLocation.connectTo(lastLocation);
-						dos.writeInt(5);
-					} else {
-						// we assume that we hit a node , that is known to us.
-						currentGraphLocation.connectTo(lastLocation);
-						currentPoint = currentGraphLocation.getPoint();
-						dos.writeInt(6);
-					}
-				}
+				currentGraphLocation = updateGraph(results,
+						currentGraphLocation);
 
 				sendPosition(currentPoint.x, currentPoint.y);
 				currentGraphLocation.send(dos);
@@ -163,19 +105,7 @@ public class GraphBot {
 				int select = random.nextInt(results.length);
 				int angle = results[select];
 
-				if (angle != 0) {
-					pilot.rotate(angle - 20);
-					Sound.beep();
-					Thread.sleep(100);
-					pilot.rotate(45, true);
-
-					while (pilot.isMoving()) {
-						if (leftSensor.readNormalizedValue() < grayValue) {
-							pilot.stop();
-							pilot.rotate(7);
-						}
-					}
-				}
+				rotateToDirection(angle);
 
 				currentAngle += angle;
 				currentAngle %= 360;
@@ -186,6 +116,83 @@ public class GraphBot {
 			Thread.sleep(25);
 		}
 
+	}
+
+	private void updateCurrentPosition(DistanceTravelListener dtl) {
+		currentDistance = dtl.distance;
+
+		float x = (float) Math.cos(Math.toRadians(currentAngle))
+				* currentDistance;
+		float y = (float) Math.sin(Math.toRadians(currentAngle))
+				* currentDistance;
+
+		currentPoint.x += x;
+		currentPoint.y += y;
+	}
+
+	private Location updateGraph(int[] results, Location currentGraphLocation)
+			throws IOException {
+		if (currentGraphLocation == null) {
+			currentGraphLocation = world.createNewLocation(currentPoint,
+					results, currentAngle);
+			Sound.beepSequenceUp();
+			dos.writeInt(4);
+		} else {
+			if (currentGraphLocation.getPoint().distance(currentPoint) > 50) {
+				currentGraphLocation = world.createNewLocation(currentPoint,
+						results, currentAngle);
+				Sound.beepSequenceUp();
+				currentGraphLocation.connectTo(lastLocation);
+				dos.writeInt(5);
+			} else {
+				// we assume that we hit a node , that is known to us.
+				currentGraphLocation.connectTo(lastLocation);
+				currentPoint = currentGraphLocation.getPoint();
+				dos.writeInt(6);
+			}
+		}
+		return currentGraphLocation;
+	}
+
+	private void initializePilot(DistanceTravelListener dtl) {
+		pilot.addMoveListener(dtl);
+		pilot.setAcceleration(500);
+		pilot.setRotateSpeed(100);
+		pilot.setTravelSpeed(150);
+	}
+
+	private int updatePosition(DistanceTravelListener dtl, int sendCounter)
+			throws IOException, InterruptedException {
+		sendCounter++;
+		sendCounter = sendCounter % 5;
+		if (sendCounter == 0) {
+			positionUpdate(dtl);
+		}
+		return sendCounter;
+	}
+
+	private void sendDebugDirections(int[] results) throws IOException {
+		dos.writeInt(10);
+		dos.writeInt(results.length);
+		for (int i = 0; i < results.length; i++) {
+			dos.writeInt(results[i]);
+		}
+	}
+
+	private void rotateToDirection(int angle) throws InterruptedException {
+		if (angle != 0) {
+			pilot.rotate(angle - 20);
+			Sound.beep();
+			Thread.sleep(100);
+			pilot.rotate(45, true);
+
+			while (pilot.isMoving()) {
+				if (leftSensor.readNormalizedValue() < grayValue) {
+					pilot.stop();
+					pilot.rotate(7);
+				}
+			}
+		}
 	}
 
 	private void positionUpdate(DistanceTravelListener dtl) throws IOException,
