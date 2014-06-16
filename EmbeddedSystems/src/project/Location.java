@@ -17,10 +17,16 @@ public class Location {
 	public Location parent = null;
 	public float dist = Float.MAX_VALUE;
 
-	public void connectTo(Location l) {
+	public void connectTo(Location l, DataOutputStream dos) throws IOException {
 		if (!l.equals(this) && !connections.contains(l)) {
 			connections.add(l);
 			l.connections.add(this);
+
+			dos.writeInt(7);
+			dos.writeFloat(position.x);
+			dos.writeFloat(position.y);
+			dos.writeFloat(l.position.x);
+			dos.writeFloat(l.position.y);
 		}
 	}
 

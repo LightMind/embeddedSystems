@@ -25,6 +25,7 @@ public class Connection implements Runnable {
 	public int y;
 
 	private List<LocationData> points = new ArrayList<LocationData>();
+	private List<Edge> edges = new ArrayList<>();
 
 	public List<LocationData> getPoints() {
 		List<LocationData> l;
@@ -32,6 +33,14 @@ public class Connection implements Runnable {
 			l = new ArrayList<>(points);
 		}
 		return l;
+	}
+
+	public List<Edge> getEdge() {
+		List<Edge> e;
+		synchronized (edges) {
+			e = new ArrayList<>(edges);
+		}
+		return e;
 	}
 
 	public int bytesToInt(byte[] bs) {
@@ -125,6 +134,23 @@ public class Connection implements Runnable {
 					}
 					if (which == 6) {
 						System.out.println("smaller than 50");
+					}
+
+					if (which == 7) {
+						float x1 = readNextFloat(in);
+						float y1 = readNextFloat(in);
+						float x2 = readNextFloat(in);
+						float y2 = readNextFloat(in);
+
+						Edge a = new Edge();
+						a.x1 = x1;
+						a.y1 = y1;
+						a.x2 = x2;
+						a.y2 = y2;
+
+						synchronized (edges) {
+							edges.add(a);
+						}
 					}
 
 					if (which == 10) {

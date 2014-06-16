@@ -198,11 +198,11 @@ public class GraphBot {
 				currentGraphLocation = world.createNewLocation(currentPoint,
 						results, currentAngle);
 				Sound.beepSequenceUp();
-				currentGraphLocation.connectTo(lastLocation);
+				currentGraphLocation.connectTo(lastLocation,dos);
 				dos.writeInt(5);
 			} else {
 				// we assume that we hit a node , that is known to us.
-				currentGraphLocation.connectTo(lastLocation);
+				currentGraphLocation.connectTo(lastLocation,dos);
 				currentPoint = currentGraphLocation.getPoint();
 				dos.writeInt(6);
 			}

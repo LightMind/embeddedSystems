@@ -25,7 +25,6 @@ public class Screen extends BasicGame {
 
 		g.fillOval(cx - 2, cy - 2, 8, 8);
 
-		g.setColor(Color.green);
 		for (LocationData d : con.getPoints()) {
 			float scx = (d.x / 3f) + xOffset;
 			float scy = arg0.getScreenHeight() / 3f - (d.y / 3f);
@@ -46,6 +45,15 @@ public class Screen extends BasicGame {
 				g.drawLine(scx, scy, scx, scy + 10);
 			}
 
+		}
+		g.setColor(Color.green);
+		for (Edge e : con.getEdge()) {
+			float x1 = e.x1 / 3f + xOffset;
+			float y1 = arg0.getScreenHeight() / 3f - (e.y1 / 3f);
+			float x2 = e.x2 / 3f + xOffset;
+			float y2 = arg0.getScreenHeight() / 3f - (e.y2 / 3f);
+
+			g.drawLine(x1, y1, x2, y2);
 		}
 
 	}
