@@ -100,4 +100,14 @@ public class World {
 		}
 
 	}
+
+	public Location findLocation(int index) {
+		for (Location l : graph) {
+			if (l.id == index) {
+				return l;
+			}
+		}
+		return null;
+
+	}
 }

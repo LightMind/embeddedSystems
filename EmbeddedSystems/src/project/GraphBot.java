@@ -137,10 +137,19 @@ public class GraphBot {
 							angle = directionToNext - currentAngle;
 							angle = limitAngle(angle);
 						} else {
-							int[] results = normalizeAngles(findOutgoingRoads(grayValue));
-							int select = random.nextInt(results.length);
-							angle = results[select];
-							dos.writeInt(104);
+							Location newTarget = null;
+							while (newTarget == null) {
+								int index = dis.readInt();
+								newTarget = world.findLocation(index);
+							}
+
+							path = world.dijkstra(currentGraphLocation,
+									newTarget);
+							Location next = path.pop();
+							int directionToNext = currentGraphLocation
+									.angleTo(next);
+							angle = directionToNext - currentAngle;
+							angle = limitAngle(angle);
 						}
 					}
 				} else {

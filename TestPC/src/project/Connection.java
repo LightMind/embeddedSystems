@@ -1,5 +1,6 @@
 package project;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,6 +25,8 @@ public class Connection implements Runnable {
 	public int x;
 	public int y;
 
+	DataOutputStream out2;
+
 	private List<LocationData> points = new ArrayList<LocationData>();
 	private List<Edge> edges = new ArrayList<>();
 
@@ -33,6 +36,18 @@ public class Connection implements Runnable {
 			l = new ArrayList<>(points);
 		}
 		return l;
+	}
+
+	public void sendInteger(int i) {
+		try {
+			out2.writeInt(i);
+			out2.flush();
+			System.out.println("Flushed outputstream!");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	public List<Edge> getEdge() {
@@ -88,6 +103,8 @@ public class Connection implements Runnable {
 		OutputStream out = nxtComm.getOutputStream();
 		InputStream in = nxtComm.getInputStream();
 
+		out2 = new DataOutputStream(out);
+
 		try {
 			while (true) {
 				{
@@ -126,14 +143,14 @@ public class Connection implements Runnable {
 					}
 
 					if (which == 4) {
-						System.out.println("null visited");
+						// System.out.println("null visited");
 					}
 
 					if (which == 5) {
-						System.out.println("bigger than 50");
+						// System.out.println("bigger than 50");
 					}
 					if (which == 6) {
-						System.out.println("smaller than 50");
+						// System.out.println("smaller than 50");
 					}
 
 					if (which == 7) {
@@ -154,39 +171,39 @@ public class Connection implements Runnable {
 					}
 
 					if (which == 10) {
-						System.out.println(" --- directions ---");
+						// System.out.println(" --- directions ---");
 
 						int amount = readNextInt(in);
-						System.out.println("amount = " + amount);
+						// System.out.println("amount = " + amount);
 						int[] array = new int[30];
 						for (int i = 0; i < amount && i < 30; i++) {
 							array[i] = readNextInt(in);
-							System.out.println(array[i]);
+							// System.out.println(array[i]);
 						}
 					}
 
 					if (which == 101) {
-						System.out.println("choose from undiscovered");
+						// System.out.println("choose from undiscovered");
 					}
 					if (which == 102) {
-						System.out.println("alle opdaget på denne knude");
+						// System.out.println("alle opdaget på denne knude");
 					}
 
 					if (which == 103) {
-						System.out.println("følg path");
+						// System.out.println("følg path");
 					}
 
 					if (which == 104) {
-						System.out.println("random");
+						// System.out.println("random");
 					}
 
 					if (which == 110) {
 						int possible = readNextInt(in);
 						int seen = readNextInt(in);
-						System.out.println("possible = "
-								+ Integer.toBinaryString(possible));
-						System.out.println("seen     = "
-								+ Integer.toBinaryString(seen));
+						// System.out.println("possible = "
+						// + Integer.toBinaryString(possible));
+						// System.out.println("seen     = "
+						// + Integer.toBinaryString(seen));
 
 					}
 
