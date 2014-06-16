@@ -21,9 +21,12 @@ public class Connection implements Runnable {
 	String name = "DHL-ONE";
 	String address = "00165310C79D";
 
+	public int x;
+	public int y;
+
 	private List<LocationData> points = new ArrayList<LocationData>();
 
-	public List<LocationData> getPoints(){
+	public List<LocationData> getPoints() {
 		List<LocationData> l;
 		synchronized (points) {
 			l = new ArrayList<>(points);
@@ -82,8 +85,8 @@ public class Connection implements Runnable {
 					int which = readNextInt(in);
 
 					if (which == 1) {
-						int x = readNextInt(in);
-						int y = readNextInt(in);
+						x = readNextInt(in);
+						y = readNextInt(in);
 
 						System.out.println("(x,y) = " + x + ", " + y);
 					}
@@ -104,7 +107,7 @@ public class Connection implements Runnable {
 						float y = readNextFloat(in);
 						int dir = readNextInt(in);
 
-						synchronized(points){
+						synchronized (points) {
 							LocationData d = new LocationData();
 							d.id = id;
 							d.x = x;
